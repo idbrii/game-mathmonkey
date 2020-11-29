@@ -1,5 +1,19 @@
 {
   "dependencies": {
+    "com.dbrizov.naughtyattributes": {
+      "version": "https://github.com/dbrizov/NaughtyAttributes.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "6610c4be31942e323a3be910ac567ec528c78d0b"
+    },
+    "com.github.idbrii.unity-vimeditor": {
+      "version": "https://github.com/idbrii/unity-vimeditor.git#dev",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "1ab3b20b13906b2238a72fa8fcae7fb4af499651"
+    },
     "com.unity.collab-proxy": {
       "version": "1.2.16",
       "depth": 0,
@@ -25,6 +39,13 @@
     },
     "com.unity.ide.vscode": {
       "version": "1.2.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.quicksearch": {
+      "version": "2.0.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
