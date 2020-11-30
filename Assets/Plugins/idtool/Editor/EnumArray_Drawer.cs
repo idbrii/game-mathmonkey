@@ -22,7 +22,10 @@ namespace idbrii.lib.editor
             var start = property.propertyPath.IndexOf("[");
             var index_str = property.propertyPath.Substring(start).Replace("[", "").Replace("]", "");
             int index = System.Convert.ToInt32(index_str);
-            label.text = enum_attr.Labels[index];
+            if (index < enum_attr.Labels.Length)
+            {
+                label.text = enum_attr.Labels[index];
+            }
             EditorGUI.PropertyField(position, property, label, true);
         }
     }
