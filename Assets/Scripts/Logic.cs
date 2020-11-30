@@ -4,6 +4,7 @@ using System.Linq;
 using System;
 using TMPro;
 using UnityEngine;
+using idbrii.lib.inspector;
 using idbrii.lib.util;
 
 using Random = UnityEngine.Random;
@@ -21,7 +22,16 @@ namespace idbrii.game.mathmonkey
             Divide,
         }
 
-        List<TextMeshProUGUI> m_Display;
+        enum MathComponents
+        {
+            Top,
+            Bottom,
+            Op,
+            Answer,
+        }
+
+        [EnumArray(typeof(MathComponents))]
+        public TextMeshProUGUI[] m_Display = new TextMeshProUGUI[EnumTool.GetLength<MathComponents>()];
 
         int m_Top;
         int m_Bottom;
@@ -30,8 +40,6 @@ namespace idbrii.game.mathmonkey
 
         void Awake()
         {
-            m_Display = GetComponentsInChildren<TextMeshProUGUI>()
-                .ToList();
         }
 
         void Start()
@@ -57,10 +65,10 @@ namespace idbrii.game.mathmonkey
             m_Op = (Operator)Random.Range(0, max_op);
             m_OpFunc = GetOpAsFunc(m_Op);
 
-            m_Display[0].text = m_Top.ToString();
-            m_Display[1].text = GetOpAsString(m_Op);
-            m_Display[2].text = m_Bottom.ToString();
-            m_Display[3].text = m_OpFunc(m_Top, m_Bottom).ToString();
+            m_Display[(int)MathComponents.Top].text = m_Top.ToString();
+            m_Display[(int)MathComponents.Op].text = GetOpAsString(m_Op);
+            m_Display[(int)MathComponents.Bottom].text = m_Bottom.ToString();
+            m_Display[(int)MathComponents.Answer].text = m_OpFunc(m_Top, m_Bottom).ToString();
 
         }
 
