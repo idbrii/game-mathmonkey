@@ -34,6 +34,8 @@ namespace idbrii.game.mathmonkey
 
         public TextMeshProUGUI[] m_SolutionDigits;
 
+        public NumberInput m_Input;
+
         int m_Top;
         int m_Bottom;
         Operator m_Op;
@@ -46,6 +48,24 @@ namespace idbrii.game.mathmonkey
         void Start()
         {
             NewPuzzle();
+        }
+
+        public void OnPressedSolution(TextMeshProUGUI solution)
+        {
+            m_Input.GetNumber((input) => {
+                if (input <= 0)
+                {
+                    // User cancelled
+                    return;
+                }
+                solution.text = input.ToString();
+                ProcessSolution();
+            });
+        }
+
+        void ProcessSolution()
+        {
+            // TODO: Check if answer is right. show hints.
         }
 
         public void NextPuzzle()
@@ -69,6 +89,16 @@ namespace idbrii.game.mathmonkey
             m_Display[(int)MathComponents.Top].text = m_Top.ToString();
             m_Display[(int)MathComponents.Op].text = GetOpAsString(m_Op);
             m_Display[(int)MathComponents.Bottom].text = m_Bottom.ToString();
+
+            for (int i = 0; i < m_SolutionDigits.Length; ++i)
+            {
+                var digit = m_SolutionDigits[i];
+                digit.text = string.Empty;
+            }
+        }
+
+        void FillInSolution()
+        {
             var solution = m_OpFunc(m_Top, m_Bottom).ToString();
             int i;
             for (i = 0; i < solution.Length; ++i)
