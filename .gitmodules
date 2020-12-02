@@ -1,0 +1,3 @@
+[submodule "Assets/Plugins/tween"]
+	path = Assets/Plugins/tween
+	url = git@github.com:idbrii/cs-tween.git
