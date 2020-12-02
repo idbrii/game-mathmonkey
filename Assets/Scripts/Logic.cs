@@ -118,6 +118,8 @@ namespace idbrii.game.mathmonkey
         public float _Victory_AnimUp = 90f;
         [Range(0.1f,9f)]
         public float _Victory_AnimSpeed = 4f;
+        [Range(1f,270f)]
+        public float _Victory_AnimRotateSpeed = 10f;
         [Range(1f,10f)]
         public float _Victory_AnimSeconds = 5f;
         IEnumerator TriggerPuzzleCompetion()
@@ -143,6 +145,10 @@ namespace idbrii.game.mathmonkey
                     var pos = t.position;
                     pos = initials[i] + Vector3.up * Mathf.Sin(_Victory_AnimSpeed * (elapsed + t.position.x)) * _Victory_AnimUp;
                     t.position = pos;
+
+                    var rot = t.rotation.eulerAngles;
+                    rot.z = Mathf.MoveTowardsAngle(rot.z, rot.z + _Victory_AnimRotateSpeed, 360f);
+                    t.rotation = Quaternion.Euler(rot);
                 }
                 yield return null;
             }
