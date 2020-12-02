@@ -37,6 +37,8 @@ namespace idbrii.game.mathmonkey
 
         public NumberInput m_Input;
         public Transform _Victory;
+        List<Image> _VictoryInitialConfetti;
+        List<Vector3> _VictoryInitialPositions;
 
         bool _CanChangeValues = true;
         int m_Top;
@@ -52,6 +54,12 @@ namespace idbrii.game.mathmonkey
         {
             m_SolutionButtons = m_SolutionDigits._Digits
                 .Select(d => d.GetComponentInParent<Image>())
+                .ToList();
+
+            _VictoryInitialConfetti = _Victory.GetComponentsInChildren<Image>()
+                .ToList();
+            _VictoryInitialPositions = _VictoryInitialConfetti
+                .Select(s => s.transform.position)
                 .ToList();
 
             NewPuzzle();
@@ -128,22 +136,17 @@ namespace idbrii.game.mathmonkey
 
             yield return new WaitForSeconds(1f);
             _Victory.gameObject.SetActive(true);
-            var spinners = _Victory.GetComponentsInChildren<Image>()
-                .ToList();
 
-            var initials = spinners
-                .Select(s => s.transform.position)
-                .ToList();
             var start_time = Time.time;
             var elapsed = 0f;
             while (elapsed < _Victory_AnimSeconds)
             {
                 elapsed = Time.time - start_time;
-                for (int i = 0; i < spinners.Count; ++i)
+                for (int i = 0; i < _VictoryInitialConfetti.Count; ++i)
                 {
-                    var t = spinners[i].transform;
+                    var t = _VictoryInitialConfetti[i].transform;
                     var pos = t.position;
-                    pos = initials[i] + Vector3.up * Mathf.Sin(_Victory_AnimSpeed * (elapsed + t.position.x)) * _Victory_AnimUp;
+                    pos = _VictoryInitialPositions[i] + Vector3.up * Mathf.Sin(_Victory_AnimSpeed * (elapsed + t.position.x)) * _Victory_AnimUp;
                     t.position = pos;
 
                     var rot = t.rotation.eulerAngles;
@@ -188,9 +191,14 @@ namespace idbrii.game.mathmonkey
             m_SolutionDigits.Clear();
         }
 
+        [NaughtyAttributes.Button]
         void FillInSolution()
         {
             m_SolutionDigits.SetValue(m_OpFunc(m_Top, m_Bottom));
+            if (Application.isPlaying)
+            {
+                ProcessSolution();
+            }
         }
 
         string GetOpAsString(Operator op)
