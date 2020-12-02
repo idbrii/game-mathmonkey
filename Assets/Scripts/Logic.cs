@@ -88,7 +88,15 @@ namespace idbrii.game.mathmonkey
         {
             var guess = m_SolutionDigits.GetValue();
             var correct = m_OpFunc(m_Top, m_Bottom);
-            if (guess == correct)
+            if (guess < 0)
+            {
+                // Invalid input. Probably haven't completed.
+                foreach (var img in m_SolutionButtons)
+                {
+                    img.color = _Neutral;
+                }
+            }
+            else if (guess == correct)
             {
                 foreach (var img in m_SolutionButtons)
                 {

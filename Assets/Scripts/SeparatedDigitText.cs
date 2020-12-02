@@ -26,12 +26,25 @@ namespace idbrii.game.mathmonkey
         public int GetValue()
         {
             var sum = 0;
+            bool had_blank = false;
             for (int i = 0; i < _Digits.Count; ++i)
             {
                 var digit = _Digits[i];
+                var is_blank = string.IsNullOrEmpty(digit.text);
+                if (had_blank && !is_blank)
+                {
+                    // one of the non leading digits was blank
+                    return -1;
+                }
+                had_blank |= is_blank;
+                // blank fails to parse
                 if (int.TryParse(digit.text, out int val))
                 {
                     sum += val * (int)Mathf.Pow(10, i);
+                }
+                else
+                {
+                    Debug.Assert(is_blank, $"Failed to parse digit[{i}] = '{digit.text}'");
                 }
             }
             return sum;
@@ -82,6 +95,13 @@ namespace idbrii.game.mathmonkey
             SetValue(val);
             Assert.AreEqual(val, GetValue());
             Debug.Log($"Set value to {val}", this);
+
+            SetValue(999);
+            _Digits[1].text = "";
+            Assert.AreEqual(-1, GetValue());
+
+            SetValue(0);
+            Debug.Log("Done test");
         }
 
     }
