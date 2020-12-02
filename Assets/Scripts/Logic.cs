@@ -36,6 +36,7 @@ namespace idbrii.game.mathmonkey
 
         public NumberInput m_Input;
 
+        bool _CanChangeValues = true;
         int m_Top;
         int m_Bottom;
         Operator m_Op;
@@ -56,6 +57,12 @@ namespace idbrii.game.mathmonkey
 
         public void OnPressedSolution(TextMeshProUGUI solution)
         {
+            if (!_CanChangeValues)
+            {
+                // TODO: error flash/sound
+                return;
+            }
+
             m_Input.GetNumber((input) => {
                 if (input < 0)
                 {
@@ -76,6 +83,7 @@ namespace idbrii.game.mathmonkey
                 foreach (var img in m_SolutionButtons)
                 {
                     img.color = _Correct;
+                    StartCoroutine(TriggerPuzzleCompetion());
                 }
             }
             else
@@ -83,7 +91,7 @@ namespace idbrii.game.mathmonkey
                 var guess_str = guess.ToString();
                 var correct_str = correct.ToString();
 
-                Debug.Log($"Total guess {guess}, correct {correct}", this);
+                //~ Debug.Log($"Total guess {guess}, correct {correct}", this);
                 int i;
                 for (i = 0; i < guess_str.Length; ++i)
                 {
@@ -94,7 +102,7 @@ namespace idbrii.game.mathmonkey
                     {
                         c = _Correct;
                     }
-                    Debug.Log($"Digit[{i}] guess {guess_digit}, correct {correct_digit}", this);
+                    //~ Debug.Log($"Digit[{i}] guess {guess_digit}, correct {correct_digit}", this);
                     m_SolutionButtons[i].color = c;
                 }
                 for (; i < m_SolutionButtons.Count; ++i)
@@ -102,6 +110,17 @@ namespace idbrii.game.mathmonkey
                     m_SolutionButtons[i].color = _Neutral;
                 }
             }
+        }
+
+        IEnumerator TriggerPuzzleCompetion()
+        {
+            _CanChangeValues = false;
+
+            // TODO: celebration
+            yield return new WaitForSeconds(5f);
+
+            NewPuzzle();
+            _CanChangeValues = true;
         }
 
         public void NextPuzzle()
