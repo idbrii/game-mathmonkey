@@ -22,17 +22,10 @@ namespace idbrii.game.mathmonkey
             Divide,
         }
 
-        enum MathComponents
-        {
-            Top,
-            Bottom,
-            Op,
-        }
-
-        [EnumArray(typeof(MathComponents))]
-        public TextMeshProUGUI[] m_Display = new TextMeshProUGUI[EnumTool.GetLength<MathComponents>()];
-
-        public TextMeshProUGUI[] m_SolutionDigits;
+        public SeparatedDigitText m_TopText;
+        public SeparatedDigitText m_BottomText;
+        public TextMeshProUGUI m_OpText;
+        public SeparatedDigitText m_SolutionDigits;
 
         public NumberInput m_Input;
 
@@ -86,32 +79,16 @@ namespace idbrii.game.mathmonkey
             m_Op = (Operator)Random.Range(0, max_op);
             m_OpFunc = GetOpAsFunc(m_Op);
 
-            m_Display[(int)MathComponents.Top].text = m_Top.ToString();
-            m_Display[(int)MathComponents.Op].text = GetOpAsString(m_Op);
-            m_Display[(int)MathComponents.Bottom].text = m_Bottom.ToString();
+            m_TopText.SetValue(m_Top);
+            m_BottomText.SetValue(m_Bottom);
+            m_OpText.text = GetOpAsString(m_Op);
 
-            for (int i = 0; i < m_SolutionDigits.Length; ++i)
-            {
-                var digit = m_SolutionDigits[i];
-                digit.text = string.Empty;
-            }
+            m_SolutionDigits.Clear();
         }
 
         void FillInSolution()
         {
-            var solution = m_OpFunc(m_Top, m_Bottom).ToString();
-            int i;
-            for (i = 0; i < solution.Length; ++i)
-            {
-                var digit = m_SolutionDigits[i];
-                var str_idx = solution.Length - i - 1;    
-                digit.text = solution[str_idx].ToString();
-            }
-            for (; i < m_SolutionDigits.Length; ++i)
-            {
-                var digit = m_SolutionDigits[i];
-                digit.text = string.Empty;
-            }
+            m_SolutionDigits.SetValue(m_OpFunc(m_Top, m_Bottom));
         }
 
         string GetOpAsString(Operator op)
