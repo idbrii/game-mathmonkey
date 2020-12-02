@@ -5,6 +5,7 @@ using System;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
+using idbrii.MoreMath;
 using idbrii.lib.inspector;
 using idbrii.lib.util;
 
@@ -35,6 +36,7 @@ namespace idbrii.game.mathmonkey
         public Color _Incorrect = Color.red;
 
         public NumberInput m_Input;
+        public Transform _Victory;
 
         bool _CanChangeValues = true;
         int m_Top;
@@ -112,12 +114,38 @@ namespace idbrii.game.mathmonkey
             }
         }
 
+        [Range(1f,200f)]
+        public float _Victory_AnimUp = 90f;
+        [Range(0.1f,9f)]
+        public float _Victory_AnimSpeed = 4f;
+        [Range(1f,10f)]
+        public float _Victory_AnimSeconds = 5f;
         IEnumerator TriggerPuzzleCompetion()
         {
             _CanChangeValues = false;
 
-            // TODO: celebration
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(1f);
+            _Victory.gameObject.SetActive(true);
+            var spinners = _Victory.GetComponentsInChildren<Image>()
+                .ToList();
+
+            var initials = spinners
+                .Select(s => s.transform.position)
+                .ToList();
+            var start_time = Time.time;
+            var elapsed = 0f;
+            while (elapsed < _Victory_AnimSeconds)
+            {
+                elapsed = Time.time - start_time;
+                for (int i = 0; i < spinners.Count; ++i)
+                {
+                    var t = spinners[i].transform;
+                    var pos = t.position;
+                    pos = initials[i] + Vector3.up * Mathf.Sin(_Victory_AnimSpeed * (elapsed + t.position.x)) * _Victory_AnimUp;
+                    t.position = pos;
+                }
+                yield return null;
+            }
 
             NewPuzzle();
             _CanChangeValues = true;
@@ -130,6 +158,7 @@ namespace idbrii.game.mathmonkey
 
         void NewPuzzle()
         {
+            _Victory.gameObject.SetActive(false);
             foreach (var img in m_SolutionButtons)
             {
                 img.color = _Neutral;
