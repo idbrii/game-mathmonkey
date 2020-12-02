@@ -107,7 +107,7 @@ namespace idbrii.game.mathmonkey
             else
             {
                 var guess_str = guess.ToString();
-                var correct_str = correct.ToString();
+                var correct_str = correct.ToString($"D{m_SolutionButtons.Count}");
 
                 //~ Debug.Log($"Total guess {guess}, correct {correct}", this);
                 int i;
@@ -123,9 +123,22 @@ namespace idbrii.game.mathmonkey
                     //~ Debug.Log($"Digit[{i}] guess {guess_digit}, correct {correct_digit}", this);
                     m_SolutionButtons[i].color = c;
                 }
-                for (; i < m_SolutionButtons.Count; ++i)
                 {
-                    m_SolutionButtons[i].color = _Neutral;
+                    var c = _Incorrect;
+                    for (; i < m_SolutionButtons.Count; ++i)
+                    {
+                        var correct_digit = correct_str[correct_str.Length - i - 1];
+                        //~ Debug.Log($"Digit[{i}] guess is blank, correct {correct_digit}", this);
+                        if (correct_digit == '0')
+                        {
+                            c = _Neutral;
+                        }
+                        else
+                        {
+                            c = _Incorrect;
+                        }
+                        m_SolutionButtons[i].color = c;
+                    }
                 }
             }
         }
