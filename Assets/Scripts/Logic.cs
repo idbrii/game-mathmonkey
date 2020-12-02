@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System;
 using TMPro;
+using UnityEngine.UI;
 using UnityEngine;
 using idbrii.lib.inspector;
 using idbrii.lib.util;
@@ -27,6 +28,12 @@ namespace idbrii.game.mathmonkey
         public TextMeshProUGUI m_OpText;
         public SeparatedDigitText m_SolutionDigits;
 
+        List<Image> m_SolutionButtons;
+
+        public Color _Correct = Color.green;
+        public Color _Neutral = Color.yellow;
+        public Color _Incorrect = Color.red;
+
         public NumberInput m_Input;
 
         int m_Top;
@@ -40,13 +47,17 @@ namespace idbrii.game.mathmonkey
 
         void Start()
         {
+            m_SolutionButtons = m_SolutionDigits._Digits
+                .Select(d => d.GetComponentInParent<Image>())
+                .ToList();
+
             NewPuzzle();
         }
 
         public void OnPressedSolution(TextMeshProUGUI solution)
         {
             m_Input.GetNumber((input) => {
-                if (input <= 0)
+                if (input < 0)
                 {
                     // User cancelled
                     return;
@@ -58,7 +69,39 @@ namespace idbrii.game.mathmonkey
 
         void ProcessSolution()
         {
-            // TODO: Check if answer is right. show hints.
+            var guess = m_SolutionDigits.GetValue();
+            var correct = m_OpFunc(m_Top, m_Bottom);
+            if (guess == correct)
+            {
+                foreach (var img in m_SolutionButtons)
+                {
+                    img.color = _Correct;
+                }
+            }
+            else
+            {
+                var guess_str = guess.ToString();
+                var correct_str = correct.ToString();
+
+                Debug.Log($"Total guess {guess}, correct {correct}", this);
+                int i;
+                for (i = 0; i < guess_str.Length; ++i)
+                {
+                    var guess_digit = guess_str[guess_str.Length - i - 1];
+                    var correct_digit = correct_str[correct_str.Length - i - 1];
+                    var c = _Incorrect;
+                    if (guess_digit == correct_digit)
+                    {
+                        c = _Correct;
+                    }
+                    Debug.Log($"Digit[{i}] guess {guess_digit}, correct {correct_digit}", this);
+                    m_SolutionButtons[i].color = c;
+                }
+                for (; i < m_SolutionButtons.Count; ++i)
+                {
+                    m_SolutionButtons[i].color = _Neutral;
+                }
+            }
         }
 
         public void NextPuzzle()
@@ -68,6 +111,11 @@ namespace idbrii.game.mathmonkey
 
         void NewPuzzle()
         {
+            foreach (var img in m_SolutionButtons)
+            {
+                img.color = _Neutral;
+            }
+
             var max_op = EnumTool.GetLength<Operator>();
             // TODO: Difficulty levels 
             // harder means:

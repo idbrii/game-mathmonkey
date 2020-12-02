@@ -717,7 +717,7 @@ RectTransform:
   m_Children:
   - {fileID: 1172461441}
   m_Father: {fileID: 582612420}
-  m_RootOrder: 6
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1450,7 +1450,7 @@ RectTransform:
   m_Children:
   - {fileID: 182970242}
   m_Father: {fileID: 582612420}
-  m_RootOrder: 8
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2030,9 +2030,9 @@ RectTransform:
   - {fileID: 528376074}
   - {fileID: 23299239}
   - {fileID: 1664011933}
-  - {fileID: 153737814}
-  - {fileID: 1039915140}
   - {fileID: 349155256}
+  - {fileID: 1039915140}
+  - {fileID: 153737814}
   m_Father: {fileID: 1394880701}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3952,7 +3952,7 @@ GameObject:
   - component: {fileID: 1394880701}
   - component: {fileID: 1394880702}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: Logic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3995,14 +3995,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f75bda8b697a84402aa68f7f21d14dcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Display:
-  - {fileID: 88511913}
-  - {fileID: 23299240}
-  - {fileID: 528376075}
   m_TopText: {fileID: 1761448441}
   m_BottomText: {fileID: 1844802622}
   m_OpText: {fileID: 528376075}
   m_SolutionDigits: {fileID: 437856347}
+  _Correct: {r: 0.16470589, g: 0.6862745, b: 0.5529412, a: 0.21176471}
+  _Neutral: {r: 0.96862745, g: 0.70980394, b: 0.36078432, a: 0.21176471}
+  _Incorrect: {r: 0.9411765, g: 0.2627451, b: 0.30980393, a: 0.21176471}
   m_Input: {fileID: 1656503623}
 --- !u!1 &1488377279
 GameObject:
