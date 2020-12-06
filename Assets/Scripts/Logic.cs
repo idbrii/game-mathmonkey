@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System;
 using TMPro;
+using UnityEngine.Assertions;
 using UnityEngine.UI;
 using UnityEngine;
 using idbrii.MoreMath;
@@ -199,17 +200,55 @@ namespace idbrii.game.mathmonkey
             // harder means:
             // * higher op
             // * higher values
-            max_op = 0;
             m_Top = Random.Range(0, 20);
             m_Bottom = Random.Range(0, 20);
-            m_Op = (Operator)Random.Range(0, max_op);
+            m_Op = (Operator)Random.Range(0, max_op + 1);
             m_OpFunc = GetOpAsFunc(m_Op);
+
+            switch (m_Op)
+            {
+                case Operator.Add:
+                    break;
+                    
+                case Operator.Subtract:
+                    // No support for negative answers, so ensure nonnegative.
+                    SelectBigger(ref m_Top, ref m_Bottom);
+                    break;
+                    
+                case Operator.Multiply:
+                    // Only simple multiplication.
+                    m_Top = Random.Range(0, 10);
+                    m_Bottom = Random.Range(0, 10);
+                    break;
+                    
+                case Operator.Divide:
+                    // Ensure whole numbers
+                    m_Bottom = Random.Range(1, 9);
+                    m_Top = m_Bottom * Random.Range(0, 9);
+                    break;
+            }
+
+            ValidateSolutionFits(m_OpFunc(m_Top, m_Bottom));
 
             m_TopText.SetValue(m_Top);
             m_BottomText.SetValue(m_Bottom);
             m_OpText.text = GetOpAsString(m_Op);
 
             m_SolutionDigits.Clear();
+        }
+
+        void ValidateSolutionFits(int solution)
+        {
+            Assert.IsTrue(solution >= 0);
+            Assert.IsTrue(solution < 999);
+        }
+
+        void SelectBigger(ref int select_bigger, ref int select_smaller)
+        {
+            var big = Mathf.Max(select_bigger, select_smaller);
+            var small = Mathf.Min(select_bigger, select_smaller);
+            select_bigger = big;
+            select_smaller = small;
         }
 
         [NaughtyAttributes.Button]
@@ -256,7 +295,11 @@ namespace idbrii.game.mathmonkey
                     return (a,b) => a * b;
                     
                 case Operator.Divide:
-                    return (a,b) => a / b;
+                    return (a,b) => {
+                        var div = Math.DivRem(a, b, out int rem);
+                        Debug.Assert(rem == 0, $"Impossible divide: {a}/{b} is not a whole number. Remainder {rem}.");
+                        return div;
+                    };
             }
             Debug.Assert(false, $"Failed to handle op {op}");
             return null;
