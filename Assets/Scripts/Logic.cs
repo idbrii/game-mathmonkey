@@ -102,8 +102,8 @@ namespace idbrii.game.mathmonkey
                 foreach (var img in m_SolutionButtons)
                 {
                     img.color = _Correct;
-                    StartCoroutine(TriggerPuzzleCompetion());
                 }
+                StartCoroutine(TriggerPuzzleCompetion());
             }
             else
             {
