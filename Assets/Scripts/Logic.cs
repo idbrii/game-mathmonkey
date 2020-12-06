@@ -187,22 +187,72 @@ namespace idbrii.game.mathmonkey
             NewPuzzle();
         }
 
+        int m_NumSolved = 0;
+        float[] m_Weights = new float[]{
+            1.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+        };
         void NewPuzzle()
         {
+            ++m_NumSolved;
+
+            // Gradually introduce harder operations
+            switch (m_NumSolved)
+            {
+                case 5:
+                    m_Weights[1] += 0.25f;
+                    Normalize(m_Weights);
+                    break;
+
+                case 15:
+                    m_Weights[1] += 0.25f;
+                    m_Weights[2] += 0.25f;
+                    Normalize(m_Weights);
+                    break;
+
+                case 30:
+                    m_Weights[1] += 0.25f;
+                    m_Weights[2] += 0.25f;
+                    Normalize(m_Weights);
+                    break;
+
+                case 40:
+                    m_Weights[0] -= 0.25f;
+                    m_Weights[3] += 0.25f;
+                    Normalize(m_Weights);
+                    break;
+
+                case 50:
+                    // Everything is familiar. Even though lots of addition was
+                    // covered, we keep it equal to ensure player keeps
+                    // succeeding.
+                    m_Weights[0] = 1.0f;
+                    m_Weights[1] = 1.0f;
+                    m_Weights[2] = 1.0f;
+                    m_Weights[3] = 1.0f;
+                    Normalize(m_Weights);
+                    break;
+            }
+
+
             _Victory.gameObject.SetActive(false);
             foreach (var img in m_SolutionButtons)
             {
                 img.color = _Neutral;
             }
 
-            var max_op = EnumTool.GetLength<Operator>();
-            // TODO: Difficulty levels 
+            var max_op_index = EnumTool.GetLength<Operator>() - 1;
+
+            var selection = SelectIndexFromNormalizedWeights(m_Weights);
+            max_op_index = Mathf.Clamp(selection, 0, max_op_index);
+            // TODO: more advanced Difficulty levels 
             // harder means:
-            // * higher op
             // * higher values
             m_Top = Random.Range(0, 20);
             m_Bottom = Random.Range(0, 20);
-            m_Op = (Operator)Random.Range(0, max_op + 1);
+            m_Op = (Operator)Random.Range(0, max_op_index + 1);
             m_OpFunc = GetOpAsFunc(m_Op);
 
             switch (m_Op)
@@ -235,6 +285,34 @@ namespace idbrii.game.mathmonkey
             m_OpText.text = GetOpAsString(m_Op);
 
             m_SolutionDigits.Clear();
+        }
+
+        void Normalize(float[] weights)
+        {
+            Debug.Log($"Renormalizing after Level up! {m_NumSolved}", this);
+            var total = weights
+                .Aggregate(0f, (sum, next) => sum + next);
+            for (int i = 0; i < weights.Length; ++i)
+            {
+                weights[i] = weights[i] / total;
+            }
+        }
+
+        int SelectIndexFromNormalizedWeights(float[] weights)
+        {
+            var pick = Random.value;
+            for (int i = 0; i < weights.Length; ++i)
+            {
+                var w = weights[i];
+                //~ Debug.Log($"SelectIndexFromNormalizedWeights[{i}]: pick {pick} weight {w}", this);
+                if (pick <= w)
+                {
+                    return i;
+                }
+                pick -= w;
+            }
+            Debug.Assert(false, $"Unexpected failure to pick. Remaining value (should be small?!?): {pick}");
+            return weights.Length - 1;
         }
 
         void ValidateSolutionFits(int solution)
