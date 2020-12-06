@@ -243,6 +243,8 @@ namespace idbrii.game.mathmonkey
                 img.color = _Neutral;
             }
 
+            var old_op = m_Op;
+
             var max_op_index = EnumTool.GetLength<Operator>() - 1;
 
             var selection = SelectIndexFromNormalizedWeights(m_Weights);
@@ -285,6 +287,26 @@ namespace idbrii.game.mathmonkey
             m_OpText.text = GetOpAsString(m_Op);
 
             m_SolutionDigits.Clear();
+
+            if (m_Op != old_op)
+            {
+                BounceOp();
+            }
+        }
+
+        [NaughtyAttributes.Button("BounceOp", NaughtyAttributes.EButtonEnableMode.Playmode)]
+        void BounceOp()
+        {
+            StartCoroutine(ScaleUpAndDown(m_OpText.transform, _OpBouceAnim_Duration, _OpBouceAnim_MaxSize));
+        }
+
+        public float _OpBouceAnim_Duration = 1f;
+        public float _OpBouceAnim_MaxSize = 2f;
+
+        IEnumerator ScaleUpAndDown(Transform t, float duration, float max_scale)
+        {
+            yield return StartCoroutine(Tween.AnimateUniformScale(t, duration, Easing.CubicInOut, 1f, max_scale));
+            yield return StartCoroutine(Tween.AnimateUniformScale(t, duration, Easing.CubicInOut, max_scale, 1f));
         }
 
         void Normalize(float[] weights)
