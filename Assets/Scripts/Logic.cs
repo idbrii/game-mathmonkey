@@ -39,7 +39,6 @@ namespace idbrii.game.mathmonkey
         public NumberInput m_Input;
         public Transform _Victory;
         List<Image> _VictoryInitialConfetti;
-        List<Vector3> _VictoryInitialPositions;
 
         bool _CanChangeValues = true;
         int m_Top;
@@ -58,9 +57,6 @@ namespace idbrii.game.mathmonkey
                 .ToList();
 
             _VictoryInitialConfetti = _Victory.GetComponentsInChildren<Image>()
-                .ToList();
-            _VictoryInitialPositions = _VictoryInitialConfetti
-                .Select(s => s.transform.position)
                 .ToList();
 
             NewPuzzle();
@@ -152,6 +148,8 @@ namespace idbrii.game.mathmonkey
         public float _Victory_AnimRotateSpeed = 10f;
         [Range(1f,10f)]
         public float _Victory_AnimSeconds = 5f;
+        [Range(1f,500f)]
+        public float _Victory_AnimSpacing = 200f;
         IEnumerator TriggerPuzzleCompetion()
         {
             _CanChangeValues = false;
@@ -164,12 +162,14 @@ namespace idbrii.game.mathmonkey
             while (elapsed < _Victory_AnimSeconds)
             {
                 elapsed = Time.time - start_time;
+                var horiz_spacing = Vector3.right * _Victory_AnimSpacing;
+                var left_align = horiz_spacing * -1f * _VictoryInitialConfetti.Count * 0.5f;
                 for (int i = 0; i < _VictoryInitialConfetti.Count; ++i)
                 {
                     var t = _VictoryInitialConfetti[i].transform;
-                    var pos = t.position;
-                    pos = _VictoryInitialPositions[i] + Vector3.up * Mathf.Sin(_Victory_AnimSpeed * (elapsed + t.position.x)) * _Victory_AnimUp;
-                    t.position = pos;
+                    var pos = left_align + (horiz_spacing * (i + 0.5f));
+                    pos += Vector3.up * Mathf.Sin(_Victory_AnimSpeed * (elapsed + pos.x)) * _Victory_AnimUp;
+                    t.localPosition = pos;
 
                     var rot = t.rotation.eulerAngles;
                     rot.z = Mathf.MoveTowardsAngle(rot.z, rot.z + _Victory_AnimRotateSpeed, 360f);
